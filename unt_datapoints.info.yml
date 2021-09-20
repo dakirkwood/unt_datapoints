@@ -1,0 +1,8 @@
+name: 'UNT DataPoints'
+type: module
+description: 'Provides tokens for UNT data.'
+core_version_requirement: 9.x
+package: 'UNT Campus'
+dependencies:
+  - token
+  - token_filter

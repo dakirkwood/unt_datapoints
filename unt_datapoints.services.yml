@@ -1,0 +1,8 @@
+services:
+  logger.channel.unt_datapoints:
+    parent: logger.channel_base
+    arguments: ['unt_datapoints']
+  unt_datapoints.default:
+    class: Drupal\unt_datapoints\Service\UntDataClient
+    arguments:
+      - '@http_client_factory'

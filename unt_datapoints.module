@@ -1,0 +1,72 @@
+<?php
+
+/**
+ * @file
+ * Contains unt_datapoints.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Render\BubbleableMetadata;
+
+/**
+ * Implements hook_help().
+ */
+function unt_datapoints_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the unt_datapoints module.
+    case 'help.page.unt_datapoints':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Provides tokens for UNT data.') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_token_info().
+ */
+function unt_datapoints_token_info() {
+  $info = [];
+  $info['types']['unt_data'] = ['name' => t('UNT Data'), 'description' => t('Commonly used UNT statistics.')];
+  $info['tokens']['unt_data']['enrollment'] = ['name' => t('Enrollment'), 'description' => t('Current UNT enrollment number.')];
+  $info['tokens']['unt_data']['bachelors'] = ['name' => t('Bachelors Degrees'), 'description' => t('Current number of Bachelor degree programs.')];
+  $info['tokens']['unt_data']['masters'] = ['name' => t('Masters Degrees'), 'description' => t('Current number of Masters degree programs.')];
+  $info['tokens']['unt_data']['doctoral'] = ['name' => t('Doctoral Degrees'), 'description' => t('Current number of Doctoral degree programs.')];
+  return $info;
+}
+
+/**
+ * Implements hook_tokens().
+ */
+function unt_datapoints_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata) {
+  $replacements = [];
+  if ($type == 'unt_data') {
+
+    foreach ($tokens as $name => $original) {
+      // Find the desired token by name.
+      switch ($name) {
+        case 'enrollment':
+          $replacements[$original] = api_token_value('UNT','enrollment');
+          break;
+        case 'bachelors':
+          $replacements[$original] = api_token_value('UNT','bachelors');
+          break;
+        case 'masters':
+          $replacements[$original] = api_token_value('UNT','masters');
+          break;
+        case 'doctoral':
+          $replacements[$original] = api_token_value('UNT','doctoral');
+          break;
+      }
+    }
+  }
+
+  return $replacements;
+}
+
+function api_token_value($org, $key){
+  $data = \Drupal::service('unt_datapoints.default')->getData($org);
+  return $data[0][$key];
+}
